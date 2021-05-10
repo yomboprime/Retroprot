@@ -21,11 +21,11 @@ Para ZXUno
 - Para ESXDOS: [Link](./public/Filebrow/FileBrow.tap)
 - Para +3e: [Link](./public/Fileplus/FileBrow.tap)
 
-Código fuente de los clientes: [Link](https://yomboprime.github.com/ZXYLib)
+Código fuente de los clientes: [Link](https://github.com/yomboprime/ZXYLib)
 
 Nota: En el cliente de +3e:
 
-- los ficheros descargados deben llevar cabecera +3DOS o no serán legibles después de la descarga. Los ficheros subidos contendrán la cabecera.
+- Los ficheros descargados deben llevar cabecera +3DOS o no serán legibles después de la descarga. Los ficheros subidos contendrán la cabecera.
 - La unidad accedida es la actual por defecto. El fichero de configuración se cargará de la misma.
 
 #### Instalación de los clientes de ficheros
