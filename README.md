@@ -19,7 +19,7 @@ Especificación del protocolo de ficheros: [Link](./Especificación_RetroProt/Es
 Para ZXUno
 
 - Para ESXDOS: [Link](https://github.com/yomboprime/Retroprot/tree/main/public/FileBrow)
-- Para +3e: [Link](https://github.com/yomboprime/Retroprot/tree/main/public/Fileplus)
+- Para +3e: [Link](https://github.com/yomboprime/Retroprot/tree/main/public/FilePlus)
 
 Código fuente de los clientes: [Link](https://github.com/yomboprime/ZXYLib)
 
