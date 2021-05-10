@@ -1,6 +1,4 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!-- Created with Inkscape (http://www.inkscape.org/) -->
-
 <svg
    xmlns:dc="http://purl.org/dc/elements/1.1/"
    xmlns:cc="http://creativecommons.org/ns#"
@@ -14,7 +12,7 @@
    viewBox="0 0 67.733332 67.733335"
    version="1.1"
    id="svg8"
-   inkscape:version="0.92.5 (2060ec1f9f, 2020-04-08)"
+   inkscape:version="1.0.1 (3bc2e813f5, 2020-09-07)"
    sodipodi:docname="dibujo.svg"
    inkscape:export-filename="./bitmap.png"
    inkscape:export-xdpi="92.319382"
@@ -39,7 +37,8 @@
      inkscape:window-height="1015"
      inkscape:window-x="0"
      inkscape:window-y="0"
-     inkscape:window-maximized="1">
+     inkscape:window-maximized="1"
+     inkscape:document-rotation="0">
     <inkscape:grid
        type="xygrid"
        id="grid845" />
@@ -52,7 +51,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -76,20 +75,21 @@
     <flowRoot
        xml:space="preserve"
        id="flowRoot849"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:53.33333206px;line-height:1.25;font-family:'Ubuntu Mono';-inkscape-font-specification:'Ubuntu Mono';letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:53.3333px;line-height:1.25;font-family:'Ubuntu Mono';-inkscape-font-specification:'Ubuntu Mono';letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none"
        transform="matrix(0.26458333,0,0,0.26458333,0,229.26665)"><flowRegion
          id="flowRegion851"
-         style="font-size:53.33333206px"><rect
+         style="font-size:53.3333px"><rect
            id="rect853"
            width="230"
            height="90"
            x="15"
            y="161"
            style="font-size:53.33333206px" /></flowRegion><flowPara
-         id="flowPara855"></flowPara></flowRoot>    <flowRoot
+         id="flowPara855" /></flowRoot>
+    <flowRoot
        xml:space="preserve"
        id="flowRoot857"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:26.66666603px;line-height:1.25;font-family:'Ubuntu Mono';-inkscape-font-specification:'Ubuntu Mono';letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:26.6667px;line-height:1.25;font-family:'Ubuntu Mono';-inkscape-font-specification:'Ubuntu Mono';letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none"
        transform="matrix(0.26458333,0,0,0.26458333,0,229.26665)"><flowRegion
          id="flowRegion859"><rect
            id="rect861"
@@ -97,19 +97,48 @@
            height="95"
            x="5"
            y="156" /></flowRegion><flowPara
-         id="flowPara863"></flowPara></flowRoot>    <flowRoot
-       xml:space="preserve"
+         id="flowPara863" /></flowRoot>
+    <g
+       aria-label="RetroProt"
+       transform="matrix(0.26906259,0,0,0.3512524,1.455287,211.06446)"
        id="flowRoot865"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:26.66666603px;line-height:1.25;font-family:'Ubuntu Mono';-inkscape-font-specification:'Ubuntu Mono';letter-spacing:0px;word-spacing:0px;fill:#8699e4;fill-opacity:1;stroke:none;stroke-width:0.86064923;"
-       transform="matrix(0.26906259,0,0,0.3512524,1.455287,211.06446)"><flowRegion
-         id="flowRegion867"
-         style="stroke-width:0.86064923;fill:#8699e4;fill-opacity:1;"><rect
-           id="rect869"
-           width="240"
-           height="95"
-           x="10"
-           y="156"
-           style="stroke-width:0.86064923;fill:#8699e4;fill-opacity:1;" /></flowRegion><flowPara
-         id="flowPara871"
-         style="font-size:48px;stroke-width:0.86064923;fill:#8699e4;fill-opacity:1;">RetroProt</flowPara></flowRoot>  </g>
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:26.6667px;line-height:1.25;font-family:'Ubuntu Mono';-inkscape-font-specification:'Ubuntu Mono';letter-spacing:0px;word-spacing:0px;fill:#8699e4;fill-opacity:1;stroke:none;stroke-width:0.860649">
+      <path
+         d="m 30.688,180.12923 q 0,2.736 -1.44,4.848 -1.44,2.064 -3.888,3.216 0.72,1.152 1.584,2.64 0.912,1.44 1.824,3.12 0.912,1.632 1.776,3.408 0.912,1.728 1.68,3.408 H 28 q -1.44,-3.456 -3.168,-6.624 -1.68,-3.168 -3.264,-5.136 -0.288,0.048 -0.864,0.048 -0.528,0 -0.72,0 h -3.36 v 11.712 H 12.64 v -29.28 q 0.72,-0.192 1.632,-0.336 0.96,-0.144 1.92,-0.192 1.008,-0.096 1.968,-0.144 0.96,-0.048 1.728,-0.048 5.376,0 8.064,2.352 2.736,2.352 2.736,7.008 z m -10.464,-5.952 q -1.104,0 -2.16,0.048 -1.008,0 -1.44,0.096 v 11.472 h 2.544 q 1.728,0 3.072,-0.24 1.392,-0.24 2.352,-0.864 1.008,-0.672 1.536,-1.776 0.528,-1.152 0.528,-2.976 0,-1.728 -0.528,-2.832 -0.528,-1.104 -1.392,-1.728 -0.864,-0.672 -2.064,-0.912 -1.152,-0.288 -2.448,-0.288 z"
+         style="font-size:48px;fill:#8699e4;fill-opacity:1;stroke-width:0.860649"
+         id="path22" />
+      <path
+         d="m 46.431908,177.96923 q 4.512,0 6.96,2.832 2.448,2.784 2.448,8.496 v 1.392 h -15.936 q 0.24,3.456 2.256,5.28 2.064,1.776 5.76,1.776 2.112,0 3.6,-0.336 1.488,-0.336 2.256,-0.72 l 0.528,3.36 q -0.72,0.384 -2.592,0.816 -1.872,0.432 -4.224,0.432 -2.88,0 -5.088,-0.864 -2.16,-0.912 -3.6,-2.448 -1.44,-1.536 -2.16,-3.648 -0.72,-2.16 -0.72,-4.656 0,-2.976 0.912,-5.184 0.912,-2.208 2.4,-3.648 1.488,-1.44 3.36,-2.16 1.872,-0.72 3.84,-0.72 z m 5.376,9.504 q 0,-2.832 -1.488,-4.464 -1.488,-1.68 -3.936,-1.68 -1.392,0 -2.544,0.528 -1.104,0.528 -1.92,1.392 -0.816,0.864 -1.296,1.968 -0.48,1.104 -0.624,2.256 z"
+         style="font-size:48px;fill:#8699e4;fill-opacity:1;stroke-width:0.860649"
+         id="path24" />
+      <path
+         d="m 69.663817,178.49723 h 9.408 v 3.312 h -9.408 v 10.368 q 0,1.68 0.24,2.736 0.24,1.056 0.768,1.728 0.576,0.624 1.44,0.864 0.864,0.24 2.112,0.24 1.728,0 2.784,-0.288 1.056,-0.288 2.016,-0.768 l 0.576,3.36 q -0.672,0.288 -2.16,0.768 -1.44,0.48 -3.6,0.48 -2.496,0 -4.08,-0.576 -1.584,-0.576 -2.496,-1.728 -0.864,-1.152 -1.2,-2.832 -0.336,-1.728 -0.336,-3.984 v -10.368 h -4.704 v -3.312 h 4.704 v -6.24 l 3.936,-0.672 z"
+         style="font-size:48px;fill:#8699e4;fill-opacity:1;stroke-width:0.860649"
+         id="path26" />
+      <path
+         d="m 87.135725,200.76923 v -21.072 q 4.896,-1.68 9.888,-1.68 1.536,0 2.928,0.144 1.392005,0.096 3.072005,0.48 l -0.72,3.504 q -1.536,-0.432 -2.736005,-0.528 -1.152,-0.144 -2.544,-0.144 -2.928,0 -5.952,0.816 v 18.48 z"
+         style="font-size:48px;fill:#8699e4;fill-opacity:1;stroke-width:0.860649"
+         id="path28" />
+      <path
+         d="m 128.07963,189.63323 q 0,2.64 -0.768,4.8 -0.72,2.112 -2.064,3.648 -1.344,1.536 -3.216,2.4 -1.872,0.816 -4.08,0.816 -2.16,0 -4.032,-0.816 -1.824,-0.864 -3.168,-2.4 -1.344,-1.536 -2.112,-3.648 -0.72,-2.16 -0.72,-4.8 0,-2.64 0.72,-4.8 0.768,-2.16 2.112,-3.648 1.344,-1.536 3.168,-2.352 1.872,-0.864 4.032,-0.864 2.208,0 4.08,0.864 1.872,0.816 3.216,2.352 1.344,1.488 2.064,3.648 0.768,2.16 0.768,4.8 z m -4.08,0 q 0,-3.792 -1.632,-5.952 -1.632,-2.208 -4.416,-2.208 -2.736,0 -4.368,2.208 -1.584,2.16 -1.584,5.952 0,3.744 1.584,5.952 1.632,2.16 4.368,2.16 2.784,0 4.416,-2.16 1.632,-2.208 1.632,-5.952 z"
+         style="font-size:48px;fill:#8699e4;fill-opacity:1;stroke-width:0.860649"
+         id="path30" />
+      <path
+         d="m 141.27954,170.76923 q 2.64,0 4.608,0.672 2.016,0.672 3.312,1.92 1.344,1.2 1.968,2.88 0.672,1.68 0.672,3.744 0,4.656 -2.736,7.2 -2.736,2.496 -8.208,2.496 h -3.456 v 11.088 h -3.936 v -29.28 q 0.864,-0.192 1.872,-0.336 1.056,-0.144 2.064,-0.24 1.056,-0.096 2.016,-0.096 1.008,-0.048 1.824,-0.048 z m 0.288,3.408 q -1.248,0 -2.4,0.048 -1.152,0 -1.728,0.096 v 12 h 3.264 q 3.6,0 5.328,-1.44 1.776,-1.44 1.776,-4.752 0,-5.952 -6.24,-5.952 z"
+         style="font-size:48px;fill:#8699e4;fill-opacity:1;stroke-width:0.860649"
+         id="path32" />
+      <path
+         d="m 159.13545,200.76923 v -21.072 q 4.896,-1.68 9.888,-1.68 1.536,0 2.928,0.144 1.392,0.096 3.072,0.48 l -0.72,3.504 q -1.536,-0.432 -2.736,-0.528 -1.152,-0.144 -2.544,-0.144 -2.928,0 -5.952,0.816 v 18.48 z"
+         style="font-size:48px;fill:#8699e4;fill-opacity:1;stroke-width:0.860649"
+         id="path34" />
+      <path
+         d="m 200.07936,189.63323 q 0,2.64 -0.768,4.8 -0.72,2.112 -2.064,3.648 -1.344,1.536 -3.216,2.4 -1.872,0.816 -4.08,0.816 -2.16,0 -4.032,-0.816 -1.824,-0.864 -3.168,-2.4 -1.344,-1.536 -2.112,-3.648 -0.72,-2.16 -0.72,-4.8 0,-2.64 0.72,-4.8 0.768,-2.16 2.112,-3.648 1.344,-1.536 3.168,-2.352 1.872,-0.864 4.032,-0.864 2.208,0 4.08,0.864 1.872,0.816 3.216,2.352 1.344,1.488 2.064,3.648 0.768,2.16 0.768,4.8 z m -4.08,0 q 0,-3.792 -1.632,-5.952 -1.632,-2.208 -4.416,-2.208 -2.736,0 -4.368,2.208 -1.584,2.16 -1.584,5.952 0,3.744 1.584,5.952 1.632,2.16 4.368,2.16 2.784,0 4.416,-2.16 1.632,-2.208 1.632,-5.952 z"
+         style="font-size:48px;fill:#8699e4;fill-opacity:1;stroke-width:0.860649"
+         id="path36" />
+      <path
+         d="m 213.66327,178.49723 h 9.408 v 3.312 h -9.408 v 10.368 q 0,1.68 0.24,2.736 0.24,1.056 0.768,1.728 0.576,0.624 1.44,0.864 0.864,0.24 2.112,0.24 1.728,0 2.784,-0.288 1.056,-0.288 2.016,-0.768 l 0.576,3.36 q -0.672,0.288 -2.16,0.768 -1.44,0.48 -3.6,0.48 -2.496,0 -4.08,-0.576 -1.584,-0.576 -2.496,-1.728 -0.864,-1.152 -1.2,-2.832 -0.336,-1.728 -0.336,-3.984 v -10.368 h -4.704 v -3.312 h 4.704 v -6.24 l 3.936,-0.672 z"
+         style="font-size:48px;fill:#8699e4;fill-opacity:1;stroke-width:0.860649"
+         id="path38" />
+    </g>
+  </g>
 </svg>
