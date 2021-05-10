@@ -1,0 +1,19 @@
+{
+  "name": "ZXServer",
+  "version": "1.0.0",
+  "keywords": [
+    "sinclair",
+    "zx",
+    "spectrum",
+    "server"
+  ],
+  "author": "yomboprime",
+  "contributors": [],
+  "dependencies": {
+    "express": "^4.17.1"
+  },
+  "scripts": {
+    "start": "node server.js"
+  },
+  "license": "MIT"
+}

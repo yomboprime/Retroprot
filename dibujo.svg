@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="256"
+   height="256"
+   viewBox="0 0 67.733332 67.733335"
+   version="1.1"
+   id="svg8"
+   inkscape:version="0.92.5 (2060ec1f9f, 2020-04-08)"
+   sodipodi:docname="dibujo.svg"
+   inkscape:export-filename="./bitmap.png"
+   inkscape:export-xdpi="92.319382"
+   inkscape:export-ydpi="92.319382">
+  <defs
+     id="defs2" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="2.8"
+     inkscape:cx="130.46101"
+     inkscape:cy="128.95667"
+     inkscape:document-units="mm"
+     inkscape:current-layer="layer1"
+     showgrid="true"
+     units="px"
+     inkscape:window-width="1920"
+     inkscape:window-height="1015"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1">
+    <inkscape:grid
+       type="xygrid"
+       id="grid845" />
+  </sodipodi:namedview>
+  <metadata
+     id="metadata5">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Capa 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(0,-229.26665)">
+    <rect
+       style="opacity:1;fill:#000000;fill-opacity:1;stroke:#dbb116;stroke-width:2.96499991;stroke-linecap:round;stroke-linejoin:bevel;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="rect873"
+       width="67.46875"
+       height="67.46875"
+       x="0"
+       y="229.53123" />
+    <path
+       style="fill:none;stroke:#dbb116;stroke-width:2.96499991;stroke-linecap:butt;stroke-linejoin:bevel;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="M 63.012608,240.11457 H 41.567434 v 17.54606 H 35.71875 v -17.54606 h -5.848685 v 17.54606 h -5.848684 v -17.54606 h -5.848684 v 17.54606 H 12.324013 V 240.11457 H 6.475329 v 27.29387 h 37.041667"
+       id="path847"
+       inkscape:connector-curvature="0" />
+    <flowRoot
+       xml:space="preserve"
+       id="flowRoot849"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:53.33333206px;line-height:1.25;font-family:'Ubuntu Mono';-inkscape-font-specification:'Ubuntu Mono';letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none"
+       transform="matrix(0.26458333,0,0,0.26458333,0,229.26665)"><flowRegion
+         id="flowRegion851"
+         style="font-size:53.33333206px"><rect
+           id="rect853"
+           width="230"
+           height="90"
+           x="15"
+           y="161"
+           style="font-size:53.33333206px" /></flowRegion><flowPara
+         id="flowPara855"></flowPara></flowRoot>    <flowRoot
+       xml:space="preserve"
+       id="flowRoot857"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:26.66666603px;line-height:1.25;font-family:'Ubuntu Mono';-inkscape-font-specification:'Ubuntu Mono';letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none"
+       transform="matrix(0.26458333,0,0,0.26458333,0,229.26665)"><flowRegion
+         id="flowRegion859"><rect
+           id="rect861"
+           width="245"
+           height="95"
+           x="5"
+           y="156" /></flowRegion><flowPara
+         id="flowPara863"></flowPara></flowRoot>    <flowRoot
+       xml:space="preserve"
+       id="flowRoot865"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:26.66666603px;line-height:1.25;font-family:'Ubuntu Mono';-inkscape-font-specification:'Ubuntu Mono';letter-spacing:0px;word-spacing:0px;fill:#8699e4;fill-opacity:1;stroke:none;stroke-width:0.86064923;"
+       transform="matrix(0.26906259,0,0,0.3512524,1.455287,211.06446)"><flowRegion
+         id="flowRegion867"
+         style="stroke-width:0.86064923;fill:#8699e4;fill-opacity:1;"><rect
+           id="rect869"
+           width="240"
+           height="95"
+           x="10"
+           y="156"
+           style="stroke-width:0.86064923;fill:#8699e4;fill-opacity:1;" /></flowRegion><flowPara
+         id="flowPara871"
+         style="font-size:48px;stroke-width:0.86064923;fill:#8699e4;fill-opacity:1;">RetroProt</flowPara></flowRoot>  </g>
+</svg>
