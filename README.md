@@ -18,8 +18,8 @@ Especificación del protocolo de ficheros: [Link](./Especificación_RetroProt/Es
 
 Para ZXUno
 
-- Para ESXDOS: [Link](./public/Filebrow/)
-- Para +3e: [Link](./public/Fileplus/)
+- Para ESXDOS: [Link](./public/Filebrow/Filebrow.tap)
+- Para +3e: [Link](./public/Fileplus/Fileplus.tap)
 
 Código fuente de los clientes: [Link](https://github.com/yomboprime/ZXYLib)
 
