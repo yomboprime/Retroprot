@@ -46,11 +46,11 @@ const fileServerPort = 8083;
 */
 
 const httpServerPort = null;
-const gameServerPort = null;
+const gameServerPort = 8092;
 const fileServerPort = 8083;
 
-const MAX_UPLOAD_FILE_SIZE = 0;
-//const MAX_UPLOAD_FILE_SIZE = 8 * 1024 * 1024;
+//const MAX_UPLOAD_FILE_SIZE = 0;
+const MAX_UPLOAD_FILE_SIZE = 8 * 1024 * 1024;
 
 // Maximum: 2^32 -1
 const maxRooms = 10;
@@ -120,10 +120,22 @@ const FILE_ORDERING_BY_DATE_DECREASING = 0x04;
 const FILE_ORDERING_BY_DATE_INCREASING = 0x05;
 const FILE_ORDERING_MAX = FILE_ORDERING_BY_DATE_INCREASING;
 
+// File transfer processing type
+// None:
+const FILE_TRANSFER_PROCESSING_TYPE_NONE = 0;
+// Add +3DOS header if the file doesn't have already:
+const FILE_TRANSFER_PROCESSING_TYPE_ADD_P3DOS_HEADER = 1;
+// Remove +3DOS header if the file has it:
+const FILE_TRANSFER_PROCESSING_TYPE_REMOVE_P3DOS_HEADER = 2;
+
 var fileServerBasePath = pathJoin( __dirname, "public" );
+
+var plus3DOSHeader = null;
 
 // Create TCP/IP File Server
 if ( fileServerPort ) {
+
+	plus3DOSHeader = fs.readFileSync( "Plus3DOSHeader.bin" );
 
 	fileServer = net.createServer( function( socket ) {
 
@@ -148,7 +160,8 @@ if ( fileServerPort ) {
 			uploadFileHandle: null,
 			uploadBuffer: null,
 			bytesUploaded: 0,
-			isWriting: false
+			isWriting: false,
+			fileTranferProcessingType: FILE_TRANSFER_PROCESSING_TYPE_NONE
 		};
 
 		socket.on( 'data', function ( data ) {
@@ -192,15 +205,15 @@ if ( fileServerPort ) {
 // ********* File Server functions *********
 
 function parseFileClientData( fileClient, data ) {
-
+//debug console.log( "BYTES LENGTH ****: " + data.length );
 	for ( var i = 0; i < data.length; i ++ ) {
 
 		var b = data[ i ];
-
+//debug console.log( "BYTE PARSE 0: " + b );
 		var isLastByte = i === data.length - 1;
 
 		if ( fileClient.isIdle ) {
-
+//debug console.log( "BYTE PARSE 1" );
 			if ( b > FILE_CLIENT_MAX_COMMAND ) {
 				console.log( "File client error: unrecognized command: " + b );
 				fileClient.socket.end();
@@ -244,7 +257,7 @@ function parseFileClientData( fileClient, data ) {
 
 		}
 		else if ( ! fileClient.parsedPathParameters ) {
-
+//debug console.log( "BYTE PARSE 2" );
 			// Parse path, search string and ordering byte parameters
 
 			if ( ! parsePathParameters( fileClient, b ) ) {
@@ -255,12 +268,12 @@ function parseFileClientData( fileClient, data ) {
 
 		}
 		else if ( fileClient.isUploading ) {
-
+//debug console.log( "BYTE PARSE 3" );
 			handleUpload( fileClient, b );
 
 		}
 		else {
-
+//debug console.log( "BYTE PARSE 4" );
 			if ( fileClient.isExecutingCommand ) {
 
 				fileClientSentTooMuchData( fileClient );
@@ -343,15 +356,16 @@ function resetFileClient( fileClient ) {
 	fileClient.uploadBuffer = null;
 	fileClient.isWriting = false;
 	fileClient.bytesUploaded = 0;
+	fileClient.fileTranferProcessingType = FILE_TRANSFER_PROCESSING_TYPE_NONE;
 
 }
 
 function parsePathParameters( fileClient, theByte ) {
 
 	// Returns boolean success (true) or error
-
+//debug console.log( "PARSE PARAMS 0" );
 	if ( ! fileClient.parsedPath ) {
-
+//debug console.log( "PARSE PARAMS 1" );
 		// Parse path
 
 		if ( theByte === 0 ) {
@@ -374,7 +388,7 @@ function parsePathParameters( fileClient, theByte ) {
 
 	}
 	else {
-
+//debug console.log( "PARSE PARAMS 2" );
 		// Rest of commands
 
 		if ( ! fileClient.parsedSearchString ) {
@@ -395,9 +409,9 @@ function parsePathParameters( fileClient, theByte ) {
 
 		}
 		else {
-
+//debug console.log( "PARSE PARAMS 3" );
 			// Parse ordering byte
-
+//debug console.log( "DEBUG ORDERING: " + theByte );
 			if ( theByte > FILE_ORDERING_MAX ) return false;
 
 			fileClient.orderingMethod = theByte;
@@ -455,17 +469,17 @@ function parseListFilesCommand( fileClient, theByte ) {
 }
 
 function parseGetFileNameAndSizeCommand( fileClient, theByte ) {
-
+//debug console.log( "DEBUG 1" );
 	// Returns true if client input finished parsing and command was executed.
 
 	if ( fileClient.parsedFirstUIntBytes === 0 ) {
-
+//debug console.log( "DEBUG 1.1" );
 		fileClient.firstUInt = theByte;
 		fileClient.parsedFirstUIntBytes = 1;
 
 	}
 	else if ( fileClient.parsedFirstUIntBytes === 1 ) {
-
+//debug console.log( "DEBUG 1.2" );
 		fileClient.firstUInt |= theByte << 8;
 
 		fileClient.parsedFirstUIntBytes = 0;
@@ -475,7 +489,7 @@ function parseGetFileNameAndSizeCommand( fileClient, theByte ) {
 		return true;
 
 	}
-
+//debug console.log( "DEBUG 1.3" );
 	return false;
 
 }
@@ -493,6 +507,13 @@ function parseDownloadFileCommand( fileClient, theByte ) {
 	else if ( fileClient.parsedFirstUIntBytes === 1 ) {
 
 		fileClient.firstUInt |= theByte << 8;
+
+		fileClient.parsedFirstUIntBytes = 2;
+
+	}
+	else {
+
+		fileClient.fileTranferProcessingType = theByte;
 
 		fileClient.parsedFirstUIntBytes = 0;
 		fileClient.parsedSecondUIntBytes = 0;
@@ -532,6 +553,13 @@ function parseUploadFileCommand( fileClient, theByte ) {
 
 		fileClient.firstUInt |= theByte << 24;
 
+		fileClient.parsedFirstUIntBytes = 4;
+
+	}
+	else {
+
+		fileClient.fileTranferProcessingType = theByte;
+
 		fileClient.parsedFirstUIntBytes = 0;
 		fileClient.parsedSecondUIntBytes = 0;
 
@@ -555,6 +583,9 @@ function executeListFilesCommand( fileClient, maxBytesFileName ) {
 
 	fileClient.isExecutingCommand = true;
 	getDirectoryEntries( fileClient.path, fileClient.searchString, fileClient.orderingMethod, ( entries ) => {
+	
+//debug console.log( "FILE PATH: " + fileClient.path );
+//debug console.log( "searchString: " + fileClient.searchString );
 
 		if ( entries === null ) {
 
@@ -641,12 +672,12 @@ function executeListFilesCommand( fileClient, maxBytesFileName ) {
 }
 
 function executeGetFileNameAndSizeCommand( fileClient ) {
-
+//debug console.log( "DEBUG 2: " + fileClient.path + ", " + fileClient.searchString );
 	fileClient.isExecutingCommand = true;
 	getDirectoryEntries( fileClient.path, fileClient.searchString, fileClient.orderingMethod, ( entries ) => {
-
+//debug console.log( "DEBUG 3" );
 		if ( entries === null ) {
-
+//debug console.log( "DEBUG 4" );
 			// "Path not found" byte response
 			singleByteBuffer[ 0 ] = 0x01;
 			fileClient.socket.write( singleByteBuffer );
@@ -656,7 +687,7 @@ function executeGetFileNameAndSizeCommand( fileClient ) {
 		}
 
 		var offset = fileClient.firstUInt;
-
+//debug console.log( "DEBUG 5: " + offset );
 		if ( offset >= entries.length ) {
 
 			// "Entry index out of bounds" byte response
@@ -668,7 +699,7 @@ function executeGetFileNameAndSizeCommand( fileClient ) {
 		}
 
 		var entry = entries[ offset ];
-
+//debug console.log( "DEBUG 6" );
 		// "OK" byte response
 		singleByteBuffer[ 0 ] = 0x00;
 		fileClient.socket.write( singleByteBuffer );
@@ -745,25 +776,96 @@ function executeDownloadFileCommand( fileClient ) {
 		singleByteBuffer[ 0 ] = 0x00;
 		fileClient.socket.write( singleByteBuffer );
 
-		// File size
-
-		fillUint32Buffer( entry.size );
-
-		fileClient.socket.write( uint32Buffer );
-
 		// File contents
-		console.log( "Sending file contents to file client, size = " + entry.size + " bytes." );
-		var readStream = fs.createReadStream( entry.fullPath );
-		pipeline( readStream, fileClient.socket, ( error ) => {
+		if ( fileClient.fileTranferProcessingType == FILE_TRANSFER_PROCESSING_TYPE_ADD_P3DOS_HEADER ) {
 
-			if ( error ) console.log( "Error transferring file contents to file client. File path: " + entry.fullPath );
-			else console.log( "Finished sending file contents to file client." );
+			fs.readFile( entry.fullPath, ( err, data ) => {
 
-		} );
+				if ( err ) {
 
-		resetFileClient( fileClient );
+					console.log( "Error transferring file contents to file client. File path: " + entry.fullPath );
+					return;
+
+				}
+
+				const hasHeader = hasPlus3DOSHeader( data );
+
+console.log( "hasHeader: " + hasHeader );
+
+				var size = data.length + ( hasHeader ? 0 : plus3DOSHeader.length );
+
+console.log( "size: " + size );
+console.log( "plus3DOSHeader.length: " + plus3DOSHeader.length );
+console.log( "file length: " + data.length );
+
+/*
+
+DEBUGUEAR POR PASOS (lento) o:
+probar el z88dk del backup
+
+
+
+
+
+paice q va bien menos q el p3dos añade 53 bytes
+implementar h+ y h- en getFileNameAndSize
+implementar h+ y h- en subidas
+*/
+				// File size
+				fillUint32Buffer( size );
+				fileClient.socket.write( uint32Buffer );
+
+				console.log( "Sending file contents to file client, size = " + size + " bytes." );
+
+				if ( ! hasHeader ) fileClient.socket.write( plus3DOSHeader );
+
+				fileClient.socket.write( data );
+
+				console.log( "Finished sending file contents to file client." );
+
+				resetFileClient( fileClient );
+
+			} );
+
+		}
+		// TODO
+		//else if ( fileClient.fileTranferProcessingType == FILE_TRANSFER_PROCESSING_TYPE_REMOVE_P3DOS_HEADER ) {
+		//}
+		else {
+
+			// File size
+			fillUint32Buffer( entry.size );
+			fileClient.socket.write( uint32Buffer );
+
+			console.log( "Sending file contents to file client, size = " + entry.size + " bytes." );
+
+			var readStream = fs.createReadStream( entry.fullPath );
+			pipeline( readStream, fileClient.socket, ( error ) => {
+
+				if ( error ) console.log( "Error transferring file contents to file client. File path: " + entry.fullPath );
+				else console.log( "Finished sending file contents to file client." );
+
+				resetFileClient( fileClient );
+
+			} );
+
+		}
 
 	} );
+
+}
+
+function hasPlus3DOSHeader( data ) {
+
+	return ( data.length > 8 ) &&
+	( String.fromCharCode( data[ 0 ] ) === 'P' ) &&
+	( String.fromCharCode( data[ 1 ] ) === 'L' ) &&
+	( String.fromCharCode( data[ 2 ] ) === 'U' ) &&
+	( String.fromCharCode( data[ 3 ] ) === 'S' ) &&
+	( String.fromCharCode( data[ 4 ] ) === '3' ) &&
+	( String.fromCharCode( data[ 5 ] ) === 'D' ) &&
+	( String.fromCharCode( data[ 6 ] ) === 'O' ) &&
+	( String.fromCharCode( data[ 7 ] ) === 'S' );
 
 }
 
@@ -811,7 +913,7 @@ function executeUploadFileCommand( fileClient ) {
 			fileClient.socket.write( singleByteBuffer );
 			resetFileClient( fileClient );
 
-			console.log( "Error opening file for writing (client upload), size = " + fileClient.firstUInt + " bytes." );
+			console.log( "Error opening file for writing (client upload), size = " + fileClient.firstUInt + " bytes, path = '" + fileClient.path + "'" );
 
 			return;
 

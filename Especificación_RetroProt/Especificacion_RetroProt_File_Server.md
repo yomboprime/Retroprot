@@ -1,7 +1,9 @@
 
 # Protocolo RetroProt File Server
 
+Versión 1.1, 14-5-2021 Añadido byte de proceso de fichero en descarga y subida.
 Versión 1.0, 24-3-2021
+
 yomboprime
 
 ## Índice
@@ -111,6 +113,11 @@ Parámetros:
 - Cadena ASCII terminada en 0 que representa un filtro (o cadena de búsqueda). Ver comando "listFiles".
 - 1 byte indicando la ordenación que deben seguir la lista de ficheros y directorios. Ver comando "listFiles".
 - 2 bytes: Número uint16_t (LSByte primero) con el número entrada a descargar.
+- 1 byte indicando el proceso que debe hacer el servidor al fichero:
+	- 0x00 Ningún proceso. El fichero se transfiere tal cual es grabado en el sistema retro.
+	- 0x01 El servidor añade cabecera +3DOS al fichero, si éste no la tenía ya.
+	- 0x02 El servidor elimina la cabecera +3DOS del fichero, si éste la tenía.
+	- Resto de valores reservados.
 
 Respuesta del servidor:
 
@@ -132,6 +139,11 @@ Parámetros:
 
 - Cadena ASCII terminada en 0 con el 'path' absoluto del directorio más el nombre de fichero que se quiere subir. El carácter separador de nombres de directorio es '/'.
 - 4 bytes, uint32_t (LSByte primero) con el tamaño en bytes del fichero.
+- 1 byte indicando el proceso que debe hacer el servidor al fichero:
+	- 0x00 Ningún proceso. El fichero se transfiere tal cual es leído en el sistema retro.
+	- 0x01 El servidor añade cabecera +3DOS al fichero, si éste no la tenía ya.
+	- 0x02 El servidor elimina la cabecera +3DOS del fichero, si éste la tenía.
+	- Resto de valores reservados.
 
 Respuesta del servidor:
 
