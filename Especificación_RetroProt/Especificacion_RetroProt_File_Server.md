@@ -1,7 +1,9 @@
-
 # Protocolo RetroProt File Server
 
+Versión 1.2, 12-12-2021 Modificado byte de proceso de fichero en descarga y subida.
+
 Versión 1.1, 14-5-2021 Añadido byte de proceso de fichero en descarga y subida.
+
 Versión 1.0, 24-3-2021
 
 yomboprime
@@ -115,8 +117,8 @@ Parámetros:
 - 2 bytes: Número uint16_t (LSByte primero) con el número entrada a descargar.
 - 1 byte indicando el proceso que debe hacer el servidor al fichero:
 	- 0x00 Ningún proceso. El fichero se transfiere tal cual es grabado en el sistema retro.
-	- 0x01 El servidor añade cabecera +3DOS al fichero, si éste no la tenía ya.
-	- 0x02 El servidor elimina la cabecera +3DOS del fichero, si éste la tenía.
+	- 0x01 El servidor elimina la cabecera +3DOS del fichero, si éste la tenía ya, y de esta extrae los 5 primeros bytes de la cabecera +3BASIC y los envía justo antes del contenido del fichero. El sistema retro (+3DOS) debe crear la cabecera y escribir estos bytes en ella.
+	- 0x02 El servidor elimina la cabecera +3DOS del fichero, si éste la tenía, y el fichero se crea en el sistema retro sin ella.
 	- Resto de valores reservados.
 
 Respuesta del servidor:
@@ -141,8 +143,8 @@ Parámetros:
 - 4 bytes, uint32_t (LSByte primero) con el tamaño en bytes del fichero.
 - 1 byte indicando el proceso que debe hacer el servidor al fichero:
 	- 0x00 Ningún proceso. El fichero se transfiere tal cual es leído en el sistema retro.
-	- 0x01 El servidor añade cabecera +3DOS al fichero, si éste no la tenía ya.
-	- 0x02 El servidor elimina la cabecera +3DOS del fichero, si éste la tenía.
+	- 0x01 El sistema retro envía el fichero sin cabecera +3DOS pero extrae de esta los 5 primeros bytes de la cabecera +3BASIC y los envía justo antes del contenido del fichero. El servidor crea la cabecera +3DOS y escribe estos bytes en ella.
+	- 0x02 El fichero se transfiere sin cabecera +3DOS (sólo válido para ficheros de tamaño múltiplo de 128 bytes)
 	- Resto de valores reservados.
 
 Respuesta del servidor:

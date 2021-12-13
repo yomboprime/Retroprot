@@ -130,12 +130,8 @@ const FILE_TRANSFER_PROCESSING_TYPE_REMOVE_P3DOS_HEADER = 2;
 
 var fileServerBasePath = pathJoin( __dirname, "public" );
 
-var plus3DOSHeader = null;
-
 // Create TCP/IP File Server
 if ( fileServerPort ) {
-
-	plus3DOSHeader = fs.readFileSync( "Plus3DOSHeader.bin" );
 
 	fileServer = net.createServer( function( socket ) {
 
@@ -149,6 +145,7 @@ if ( fileServerPort ) {
 			parsedPath: false,
 			parsedSearchString: false,
 			path: "",
+			fullDirPath: "",
 			searchString: "",
 			orderingMethod: 0,
 			parsedFirstUIntBytes: 0,
@@ -158,6 +155,8 @@ if ( fileServerPort ) {
 			isExecutingCommand: false,
 			isUploading: false,
 			uploadFileHandle: null,
+			uploadSize: 0,
+			uploadToMemory: false,
 			uploadBuffer: null,
 			bytesUploaded: 0,
 			isWriting: false,
@@ -348,11 +347,14 @@ function resetFileClient( fileClient ) {
 	fileClient.parsedPath = false;
 	fileClient.parsedSearchString = false;
 	fileClient.path = "";
+	fileClient.fullDirPath = "";
 	fileClient.searchString = "";
 	fileClient.orderingMethod = 0;
 	fileClient.isExecutingCommand = false;
 	fileClient.isUploading = false;
 	fileClient.uploadFileHandle = null;
+	fileClient.uploadSize = 0;
+	fileClient.uploadToMemory = false;
 	fileClient.uploadBuffer = null;
 	fileClient.isWriting = false;
 	fileClient.bytesUploaded = 0;
@@ -469,17 +471,17 @@ function parseListFilesCommand( fileClient, theByte ) {
 }
 
 function parseGetFileNameAndSizeCommand( fileClient, theByte ) {
-//debug console.log( "DEBUG 1" );
+
 	// Returns true if client input finished parsing and command was executed.
 
 	if ( fileClient.parsedFirstUIntBytes === 0 ) {
-//debug console.log( "DEBUG 1.1" );
+
 		fileClient.firstUInt = theByte;
 		fileClient.parsedFirstUIntBytes = 1;
 
 	}
 	else if ( fileClient.parsedFirstUIntBytes === 1 ) {
-//debug console.log( "DEBUG 1.2" );
+
 		fileClient.firstUInt |= theByte << 8;
 
 		fileClient.parsedFirstUIntBytes = 0;
@@ -489,7 +491,7 @@ function parseGetFileNameAndSizeCommand( fileClient, theByte ) {
 		return true;
 
 	}
-//debug console.log( "DEBUG 1.3" );
+
 	return false;
 
 }
@@ -511,6 +513,7 @@ function parseDownloadFileCommand( fileClient, theByte ) {
 		fileClient.parsedFirstUIntBytes = 2;
 
 	}
+
 	else {
 
 		fileClient.fileTranferProcessingType = theByte;
@@ -522,6 +525,7 @@ function parseDownloadFileCommand( fileClient, theByte ) {
 		return true;
 
 	}
+
 
 	return false;
 
@@ -583,9 +587,6 @@ function executeListFilesCommand( fileClient, maxBytesFileName ) {
 
 	fileClient.isExecutingCommand = true;
 	getDirectoryEntries( fileClient.path, fileClient.searchString, fileClient.orderingMethod, ( entries ) => {
-	
-//debug console.log( "FILE PATH: " + fileClient.path );
-//debug console.log( "searchString: " + fileClient.searchString );
 
 		if ( entries === null ) {
 
@@ -672,12 +673,12 @@ function executeListFilesCommand( fileClient, maxBytesFileName ) {
 }
 
 function executeGetFileNameAndSizeCommand( fileClient ) {
-//debug console.log( "DEBUG 2: " + fileClient.path + ", " + fileClient.searchString );
+
 	fileClient.isExecutingCommand = true;
 	getDirectoryEntries( fileClient.path, fileClient.searchString, fileClient.orderingMethod, ( entries ) => {
-//debug console.log( "DEBUG 3" );
+
 		if ( entries === null ) {
-//debug console.log( "DEBUG 4" );
+
 			// "Path not found" byte response
 			singleByteBuffer[ 0 ] = 0x01;
 			fileClient.socket.write( singleByteBuffer );
@@ -687,7 +688,7 @@ function executeGetFileNameAndSizeCommand( fileClient ) {
 		}
 
 		var offset = fileClient.firstUInt;
-//debug console.log( "DEBUG 5: " + offset );
+
 		if ( offset >= entries.length ) {
 
 			// "Entry index out of bounds" byte response
@@ -699,7 +700,7 @@ function executeGetFileNameAndSizeCommand( fileClient ) {
 		}
 
 		var entry = entries[ offset ];
-//debug console.log( "DEBUG 6" );
+
 		// "OK" byte response
 		singleByteBuffer[ 0 ] = 0x00;
 		fileClient.socket.write( singleByteBuffer );
@@ -776,8 +777,7 @@ function executeDownloadFileCommand( fileClient ) {
 		singleByteBuffer[ 0 ] = 0x00;
 		fileClient.socket.write( singleByteBuffer );
 
-		// File contents
-		if ( fileClient.fileTranferProcessingType == FILE_TRANSFER_PROCESSING_TYPE_ADD_P3DOS_HEADER ) {
+		if ( fileClient.fileTranferProcessingType === FILE_TRANSFER_PROCESSING_TYPE_ADD_P3DOS_HEADER || fileClient.fileTranferProcessingType === FILE_TRANSFER_PROCESSING_TYPE_REMOVE_P3DOS_HEADER ) {
 
 			fs.readFile( entry.fullPath, ( err, data ) => {
 
@@ -790,35 +790,56 @@ function executeDownloadFileCommand( fileClient ) {
 
 				const hasHeader = hasPlus3DOSHeader( data );
 
-console.log( "hasHeader: " + hasHeader );
+				var fileSize = data.length;
 
-				var size = data.length + ( hasHeader ? 0 : plus3DOSHeader.length );
+				var preData = null;
+				if ( fileClient.fileTranferProcessingType === FILE_TRANSFER_PROCESSING_TYPE_ADD_P3DOS_HEADER ) {
 
-console.log( "size: " + size );
-console.log( "plus3DOSHeader.length: " + plus3DOSHeader.length );
-console.log( "file length: " + data.length );
+					preData = Buffer.alloc( 5 );
 
-/*
+					if ( hasHeader ) {
 
-DEBUGUEAR POR PASOS (lento) o:
-probar el z88dk del backup
+						// Set +3BASIC header
+						const basicHeaderOffset = 15;
+						for ( var i = 0; i < 5; i ++ ) preData[ i ] = data[ basicHeaderOffset + i ];
 
+						// Remove +3DOS header from file contents
+						data = data.slice( 128 );
+						fileSize = data.length;
 
+					}
+					else {
 
+						// Set default +3BASIC header
+						var ext = getFilenameExtension( entry.fullPath ).toLowerCase();
+						var b0 = ( fileSize <= 65536 ) ? ( fileSize & 0x00000FF ) : 0;
+						var b1 = ( fileSize <= 65536 ) ? ( ( fileSize & 0x000FF00 ) >> 8 ) : 0;
+						preData[ 0 ] = ext === 'bas' ? 0 : 3;
+						preData[ 1 ] = b0;
+						preData[ 2 ] = b1;
+						preData[ 3 ] = 0x00;
+						preData[ 4 ] = ext === 'scr' ? 0x40 : 0x80;
 
+					}
 
-paice q va bien menos q el p3dos añade 53 bytes
-implementar h+ y h- en getFileNameAndSize
-implementar h+ y h- en subidas
-*/
-				// File size
-				fillUint32Buffer( size );
+				}
+
+				if ( fileSize === 0 ) {
+
+					console.log( "Error transferring file contents to file client: File size is 0. File path: " + entry.fullPath );
+					return;
+
+				}
+
+				// Send file size
+				fillUint32Buffer( fileSize );
 				fileClient.socket.write( uint32Buffer );
 
-				console.log( "Sending file contents to file client, size = " + size + " bytes." );
+				console.log( "Sending file contents to file client, fileSize = " + fileSize + " bytes." );
 
-				if ( ! hasHeader ) fileClient.socket.write( plus3DOSHeader );
+				if ( preData !== null ) data = Buffer.concat( [ preData, data ] );
 
+				// Send data
 				fileClient.socket.write( data );
 
 				console.log( "Finished sending file contents to file client." );
@@ -828,17 +849,15 @@ implementar h+ y h- en subidas
 			} );
 
 		}
-		// TODO
-		//else if ( fileClient.fileTranferProcessingType == FILE_TRANSFER_PROCESSING_TYPE_REMOVE_P3DOS_HEADER ) {
-		//}
 		else {
 
-			// File size
+			// Send file size
 			fillUint32Buffer( entry.size );
 			fileClient.socket.write( uint32Buffer );
 
 			console.log( "Sending file contents to file client, size = " + entry.size + " bytes." );
 
+			// Send data
 			var readStream = fs.createReadStream( entry.fullPath );
 			pipeline( readStream, fileClient.socket, ( error ) => {
 
@@ -893,9 +912,9 @@ function executeUploadFileCommand( fileClient ) {
 
 	}
 
-	var fullDirPath = pathJoin( fileServerBasePath, fileClient.path );
+	fileClient.fullDirPath = pathJoin( fileServerBasePath, fileClient.path );
 
-	if ( ! fullDirPath.startsWith( fileServerBasePath ) ) {
+	if ( ! fileClient.fullDirPath.startsWith( fileServerBasePath ) ) {
 
 		// Tried directory traversal
 		return;
@@ -904,7 +923,7 @@ function executeUploadFileCommand( fileClient ) {
 
 	// TODO check if file exists, return error 0x01
 
-	fs.open( fullDirPath, 'w', ( err, fd ) => {
+	fs.open( fileClient.fullDirPath, 'w', ( err, fd ) => {
 
 		if ( err ) {
 
@@ -926,14 +945,30 @@ function executeUploadFileCommand( fileClient ) {
 		fileClient.socket.write( singleByteBuffer );
 
 		fileClient.isUploading = true;
+		fileClient.uploadToMemory = false;
 
 		console.log( "Client is uploading file with size = " + fileClient.firstUInt + " bytes." );
+
+		fileClient.uploadSize = fileClient.firstUInt;
+
+		if ( fileClient.fileTranferProcessingType === FILE_TRANSFER_PROCESSING_TYPE_ADD_P3DOS_HEADER ) {
+
+			fileClient.uploadSize += 5;
+			fileClient.uploadToMemory = true;
+		}
 
 	} );
 
 }
 
 function handleUpload( fileClient, theByte ) {
+
+	if ( fileClient.uploadToMemory ) handleUploadToMemory( fileClient, theByte );
+	else handleUploadToFile( fileClient, theByte );
+
+}
+
+function handleUploadToFile( fileClient, theByte ) {
 
 	const tempBuffer = Buffer.alloc( 1 );
 	tempBuffer[ 0 ] = theByte;
@@ -949,7 +984,7 @@ function handleUpload( fileClient, theByte ) {
 		}
 		else {
 
-			if ( fileClient.uploadBuffer.length + 1 > fileClient.firstUInt ) {
+			if ( fileClient.uploadBuffer.length + 1 > fileClient.uploadSize ) {
 
 				fileClientSentTooMuchData();
 				return;
@@ -970,7 +1005,7 @@ function handleUpload( fileClient, theByte ) {
 			fileClient.uploadBuffer = Buffer.concat( [ fileClient.uploadBuffer, tempBuffer ] );
 			fileClient.isWriting = true;
 			fileClient.bytesUploaded += fileClient.uploadBuffer.length;
-			if ( fileClient.bytesUploaded > fileClient.firstUInt ) {
+			if ( fileClient.bytesUploaded > fileClient.uploadSize ) {
 
 				fileClientSentTooMuchData();
 				return;
@@ -984,7 +1019,7 @@ function handleUpload( fileClient, theByte ) {
 
 			fileClient.isWriting = true;
 			fileClient.bytesUploaded ++;
-			if ( fileClient.bytesUploaded > fileClient.firstUInt ) {
+			if ( fileClient.bytesUploaded > fileClient.uploadSize ) {
 
 				fileClientSentTooMuchData();
 				return;
@@ -1020,7 +1055,7 @@ function handleUpload( fileClient, theByte ) {
 
 			fileClient.isWriting = true;
 			fileClient.bytesUploaded += fileClient.uploadBuffer.length;
-			if ( fileClient.bytesUploaded > fileClient.firstUInt ) {
+			if ( fileClient.bytesUploaded > fileClient.uploadSize ) {
 
 				fileClientSentTooMuchData();
 				return;
@@ -1030,7 +1065,7 @@ function handleUpload( fileClient, theByte ) {
 			fileClient.uploadBuffer = null;
 
 		}
-		else if ( fileClient.bytesUploaded === fileClient.firstUInt ) {
+		else if ( fileClient.bytesUploaded === fileClient.uploadSize ) {
 
 			fs.close( fileClient.uploadFileHandle, () => {
 
@@ -1044,9 +1079,13 @@ function handleUpload( fileClient, theByte ) {
 				// "OK" byte response and end of command
 				singleByteBuffer[ 0 ] = 0x00;
 				fileClient.socket.write( singleByteBuffer );
-				resetFileClient( fileClient );
 
-				console.log( "Finished receiving file contents from file client." );
+				processFileUploaded( fileClient, () => {
+
+					resetFileClient( fileClient );
+
+					console.log( "Finished receiving file contents from file client." );
+				} );
 
 			} );
 
@@ -1055,6 +1094,142 @@ function handleUpload( fileClient, theByte ) {
 	}
 
 }
+
+function handleUploadToMemory( fileClient, theByte ) {
+
+	if ( fileClient.bytesUploaded + 1 > fileClient.uploadSize ) {
+
+		fileClientSentTooMuchData();
+		return;
+
+	}
+
+	if ( fileClient.uploadBuffer === null ) {
+
+		fileClient.uploadBuffer = Buffer.alloc( fileClient.uploadSize );
+
+	}
+
+	fileClient.uploadBuffer[ fileClient.bytesUploaded ++ ] = theByte;
+
+	if ( fileClient.bytesUploaded === fileClient.uploadSize ) {
+
+		// Write the file
+
+		fs.write( fileClient.uploadFileHandle, fileClient.uploadBuffer, ( err ) => {
+
+			if ( err ) console.log( "Error writing to disk uploaded file to memory. File path: " + fileClient.fullDirPath );
+
+			fileClient.uploadBuffer = null;
+
+			fs.close( fileClient.uploadFileHandle, () => {
+
+				if ( err ) {
+
+					console.log( "Error closing file upload to memory from file client." );
+					return;
+
+				}
+
+				// "OK" byte response and end of command
+				singleByteBuffer[ 0 ] = 0x00;
+				fileClient.socket.write( singleByteBuffer );
+
+				processFileUploaded( fileClient, () => {
+
+					resetFileClient( fileClient );
+
+					console.log( "Finished receiving file contents from file client." );
+
+				} );
+
+			} );
+
+		} );
+
+	}
+
+}
+
+function processFileUploaded( fileClient, onProcessed ) {
+
+	if ( fileClient.fileTranferProcessingType === FILE_TRANSFER_PROCESSING_TYPE_ADD_P3DOS_HEADER ) {
+
+		reconstructFilePlus3DOSHeader( fileClient.fullDirPath, onProcessed );
+
+	}
+	else onProcessed();
+
+}
+
+function reconstructFilePlus3DOSHeader( fullDirPath, onDone ) {
+
+	fs.readFile( fullDirPath, ( err, data ) => {
+
+		if ( err ) {
+
+			console.log( "Error processing +3DOS header on uploaded file while loading. File path: " + entry.fullPath );
+			onDone();
+			return;
+
+		}
+
+		var fileSize = data.length;
+
+		if ( fileSize < 6 ) {
+
+			console.log( "Error processing +3DOS header on uploaded file. It is too small. File path: " + entry.fullPath );
+			onDone();
+			return;
+		}
+
+		// Get +3BASIC header from start of file
+		var basicHeader = Buffer.alloc( 5 );
+		for ( var i = 0; i < 5; i ++ ) basicHeader[ i ] = data[ i ];
+		data = data.slice( 5 );
+		fileSize -= 5;
+
+		// Construct +3DOS header
+		var header = Buffer.alloc( 128 );
+		header[ 0 ] = 0x50;
+		header[ 1 ] = 0x4C;
+		header[ 2 ] = 0x55;
+		header[ 3 ] = 0x53;
+		header[ 4 ] = 0x33;
+		header[ 5 ] = 0x44;
+		header[ 6 ] = 0x4F;
+		header[ 7 ] = 0x53;
+		header[ 8 ] = 0x1A;
+		header[ 9 ] = 0x01;
+		header[ 10 ] = 0x00;
+
+		var p = 11;
+
+		header[ p ++ ] = fileSize & 0x0000000FF;
+		header[ p ++ ] = ( fileSize & 0x00000FF00 ) >> 8;
+		header[ p ++ ] = ( fileSize & 0x000FF0000 ) >> 16;
+		header[ p ++ ] = ( fileSize & 0x0FF000000 ) >> 24;
+
+		for ( var i = 0; i < 5; i ++ ) header[ p ++ ] = basicHeader[ i ];
+
+		for ( ; p < 127; p ++ ) header[ p ] = 0;
+
+		var checksum = 0;
+		for ( var i = 0; i < 127; i ++ ) checksum = ( checksum + header[ i ] ) % 256;
+		header[ 127 ] = checksum;
+
+		data = Buffer.concat( [ header, data ] );
+
+		fs.writeFile( fullDirPath, data, ( err ) => {
+
+			if ( err ) console.log( "Error processing +3DOS header on uploaded file while writing. File path: " + entry.fullPath );
+
+			onDone();
+
+		} );
+
+	} );
+}
 
 function getDirectoryEntries( directoryPath, searchString, orderingMethod, callback ) {
 
@@ -1082,6 +1257,7 @@ function getDirectoryEntries( directoryPath, searchString, orderingMethod, callb
 
 		if ( files.length === 0 ) {
 
+			entries.push( getTwoPointsDirEntry() );
 			callback( entries );
 			return;
 
@@ -1105,14 +1281,7 @@ function getDirectoryEntries( directoryPath, searchString, orderingMethod, callb
 				var upDir = pathJoin( "./", directoryPath );
 				if ( ! ( upDir === "/" || upDir === "./" ) ) {
 
-					entries.unshift( {
-						fullPath: null,
-						name: "..",
-						nameWithoutExtension: "..",
-						extension: "",
-						isDirectory: true,
-						size: 0
-					} );
+					entries.unshift( getTwoPointsDirEntry() );
 
 				}
 
@@ -1254,6 +1423,19 @@ function getDirectoryEntries( directoryPath, searchString, orderingMethod, callb
 		}
 
 	} );
+
+	function getTwoPointsDirEntry() {
+
+		return {
+			fullPath: null,
+			name: "..",
+			nameWithoutExtension: "..",
+			extension: "",
+			isDirectory: true,
+			size: 0
+		};
+
+	}
 
 }
 
