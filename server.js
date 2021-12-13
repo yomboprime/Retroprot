@@ -1205,6 +1205,7 @@ function reconstructFilePlus3DOSHeader( fullDirPath, onDone ) {
 
 		var p = 11;
 
+		fileSize += 128;
 		header[ p ++ ] = fileSize & 0x0000000FF;
 		header[ p ++ ] = ( fileSize & 0x00000FF00 ) >> 8;
 		header[ p ++ ] = ( fileSize & 0x000FF0000 ) >> 16;
