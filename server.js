@@ -795,13 +795,13 @@ function executeDownloadFileCommand( fileClient ) {
 				var preData = null;
 				if ( fileClient.fileTranferProcessingType === FILE_TRANSFER_PROCESSING_TYPE_ADD_P3DOS_HEADER ) {
 
-					preData = Buffer.alloc( 5 );
+					preData = Buffer.alloc( 7 );
 
 					if ( hasHeader ) {
 
 						// Set +3BASIC header
 						const basicHeaderOffset = 15;
-						for ( var i = 0; i < 5; i ++ ) preData[ i ] = data[ basicHeaderOffset + i ];
+						for ( var i = 0; i < 7; i ++ ) preData[ i ] = data[ basicHeaderOffset + i ];
 
 						// Remove +3DOS header from file contents
 						data = data.slice( 128 );
@@ -819,6 +819,8 @@ function executeDownloadFileCommand( fileClient ) {
 						preData[ 2 ] = b1;
 						preData[ 3 ] = 0x00;
 						preData[ 4 ] = ext === 'scr' ? 0x40 : 0x80;
+						preData[ 5 ] = 0x00;
+						preData[ 6 ] = 0x00;
 
 					}
 
@@ -953,7 +955,7 @@ function executeUploadFileCommand( fileClient ) {
 
 		if ( fileClient.fileTranferProcessingType === FILE_TRANSFER_PROCESSING_TYPE_ADD_P3DOS_HEADER ) {
 
-			fileClient.uploadSize += 5;
+			fileClient.uploadSize += 7;
 			fileClient.uploadToMemory = true;
 		}
 
@@ -1176,7 +1178,7 @@ function reconstructFilePlus3DOSHeader( fullDirPath, onDone ) {
 
 		var fileSize = data.length;
 
-		if ( fileSize < 6 ) {
+		if ( fileSize < 8 ) {
 
 			console.log( "Error processing +3DOS header on uploaded file. It is too small. File path: " + entry.fullPath );
 			onDone();
@@ -1184,10 +1186,10 @@ function reconstructFilePlus3DOSHeader( fullDirPath, onDone ) {
 		}
 
 		// Get +3BASIC header from start of file
-		var basicHeader = Buffer.alloc( 5 );
-		for ( var i = 0; i < 5; i ++ ) basicHeader[ i ] = data[ i ];
-		data = data.slice( 5 );
-		fileSize -= 5;
+		var basicHeader = Buffer.alloc( 7 );
+		for ( var i = 0; i < 7; i ++ ) basicHeader[ i ] = data[ i ];
+		data = data.slice( 7 );
+		fileSize -= 7;
 
 		// Construct +3DOS header
 		var header = Buffer.alloc( 128 );
@@ -1211,7 +1213,7 @@ function reconstructFilePlus3DOSHeader( fullDirPath, onDone ) {
 		header[ p ++ ] = ( fileSize & 0x000FF0000 ) >> 16;
 		header[ p ++ ] = ( fileSize & 0x0FF000000 ) >> 24;
 
-		for ( var i = 0; i < 5; i ++ ) header[ p ++ ] = basicHeader[ i ];
+		for ( var i = 0; i < 7; i ++ ) header[ p ++ ] = basicHeader[ i ];
 
 		for ( ; p < 127; p ++ ) header[ p ] = 0;
 
