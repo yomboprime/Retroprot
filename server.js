@@ -878,7 +878,7 @@ function executeDownloadFileCommand( fileClient ) {
 
 function hasPlus3DOSHeader( data ) {
 
-	return ( data.length > 8 ) &&
+	return ( data.length > 128 ) &&
 	( String.fromCharCode( data[ 0 ] ) === 'P' ) &&
 	( String.fromCharCode( data[ 1 ] ) === 'L' ) &&
 	( String.fromCharCode( data[ 2 ] ) === 'U' ) &&
@@ -1160,6 +1160,11 @@ function processFileUploaded( fileClient, onProcessed ) {
 		reconstructFilePlus3DOSHeader( fileClient.fullDirPath, onProcessed );
 
 	}
+	else if ( fileClient.fileTranferProcessingType === FILE_TRANSFER_PROCESSING_TYPE_REMOVE_P3DOS_HEADER ) {
+
+		removeFilePlus3DOSHeader( fileClient.fullDirPath, onProcessed );
+
+	}
 	else onProcessed();
 
 }
@@ -1233,6 +1238,51 @@ function reconstructFilePlus3DOSHeader( fullDirPath, onDone ) {
 
 	} );
 }
+
+function removeFilePlus3DOSHeader( fullDirPath, onDone ) {
+
+	fs.readFile( fullDirPath, ( err, data ) => {
+
+		if ( err ) {
+
+			console.log( "Error removing +3DOS header on uploaded file while loading. File path: " + entry.fullPath );
+			onDone();
+			return;
+
+		}
+
+		if ( ! hasPlus3DOSHeader( data ) ) {
+
+			onDone();
+			return;
+
+		}
+
+		var fileSize = data.length;
+
+		if ( fileSize < 129 ) {
+
+			console.log( "Error removing +3DOS header on uploaded file. It is too small. File path: " + entry.fullPath );
+			onDone();
+			return;
+
+		}
+
+		data = data.slice( data.length - 128 );
+
+		fs.writeFile( fullDirPath, data, ( err ) => {
+
+			if ( err ) console.log( "Error removing +3DOS header on uploaded file while writing. File path: " + entry.fullPath );
+
+			onDone();
+			return;
+
+		} );
+
+	} );
+
+}
+
 
 function getDirectoryEntries( directoryPath, searchString, orderingMethod, callback ) {
 
